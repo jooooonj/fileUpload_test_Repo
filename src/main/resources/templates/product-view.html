@@ -13,11 +13,8 @@
 
     상품명: <span th:text="${product.name}">상품명</span><br/>
     상품가격: <span th:text="${product.price}">상품가격</span><br/>
-    메인사진:  <a th:if="${product.productFile.mainFile}" th:href="|/attach/main/${product.id}|" th:text="${product.getProductFile().getOriginalFileName()()}" /><br/>
-    <img th:each="imageFile : ${product.productFile.mainFile}" th:src="|/images/${imageFile.getTerminatedFileName()}|" width="300" height="300"/>
-    서브사진: <a th:if="${product.productFile.subFiles}" th:href="|/attach/sub/${product.id}|" th:text="${product.getProductFile().getOriginalFileName()()}" /><br/>
-    <img th:each="imageFile : ${product.productFile.subFiles}" th:src="|/images/${imageFile.getTerminatedFileName()}|" width="300" height="300"/>
-
+    메인사진: <img th:src="|/images/${product.productFile.terminatedFileName}|" width="300" height="300"/></br>
+    서브사진: <img th:each="imageFile : ${product.productFile.subFiles}" th:src="|/images/${imageFile.terminatedFileName}|" width="300" height="300"/>
 </div> <!-- /container -->
 </body>
 </html>

@@ -42,7 +42,7 @@ public class ProductController {
         List<ProductFile> subFiles = fileTerminator.terminateFileList(productSaveRequest.getSubFiles());
 
         for(ProductFile productFile : subFiles){
-            productFile.connectMainFile(mainFile);
+            mainFile.connectFile(productFile);
         }
 
         ProductEx productEx = ProductEx
@@ -61,7 +61,7 @@ public class ProductController {
         ProductEx productEx = productRepository.findById(productId).orElseThrow();
 
         model.addAttribute("product", productEx);
-        return "product-view2";
+        return "product-view";
     }
 
     @ResponseBody

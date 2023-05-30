@@ -1,10 +1,7 @@
 package com.ll.upload.product.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class ProductFile {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +26,7 @@ public class ProductFile {
 
     //종속
     @OneToMany(mappedBy = "mainFile", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<ProductFile> subFiles = new ArrayList<>();
 
     @OneToOne(mappedBy = "productFile")
@@ -39,8 +38,9 @@ public class ProductFile {
     }
 
     //반대는 굳이 필요없을듯 하다.
-    public void connectMainFile(ProductFile mainFile){
-        this.mainFile = mainFile;
+    public void connectFile(ProductFile subFile){
+        this.getSubFiles().add(subFile);
+        subFile.setMainFile(this);
     }
 
 
