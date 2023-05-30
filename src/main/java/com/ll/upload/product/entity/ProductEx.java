@@ -21,11 +21,10 @@ public class ProductEx{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_file")
     private ProductFile productFile;
 
     @Column(name = "price", nullable = false)
     private int price;
-
 }

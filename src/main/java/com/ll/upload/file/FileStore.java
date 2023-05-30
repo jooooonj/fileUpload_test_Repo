@@ -42,13 +42,13 @@ public class FileStore {
         return new UploadFile(originalFilename, storeFileName);
     }
 
-    private String createStoreFileName(String originalFilename) {
+    public static String createStoreFileName(String originalFilename) {
         String ext = extractExt(originalFilename);
         String uuid = UUID.randomUUID().toString();
         return uuid + "." + ext;
     }
 
-    private String extractExt(String originalFilename) {
+    public static String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
     }

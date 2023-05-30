@@ -23,18 +23,25 @@ public class ProductFile {
     private String terminatedFileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_file")
+    @JoinColumn(name = "main_file_id")
     private ProductFile mainFile;
 
     //종속
-    @OneToMany(mappedBy = "mainFile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "mainFile", cascade = CascadeType.ALL)
     private List<ProductFile> subFiles = new ArrayList<>();
 
-    @OneToOne(mappedBy = "productFile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "productFile")
     private ProductEx productEx;
 
-    //반대는 굳이 필요없을듯 하다.
-    public void connectSubFiles(List<ProductFile> subFiles){
-        this.subFiles = subFiles;
+    public ProductFile(String originalFileName, String terminatedFileName) {
+        this.originalFileName = originalFileName;
+        this.terminatedFileName = terminatedFileName;
     }
+
+    //반대는 굳이 필요없을듯 하다.
+    public void connectMainFile(ProductFile mainFile){
+        this.mainFile = mainFile;
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package com.ll.upload.product.terminator;
 
 import com.ll.upload.domain.UploadFile;
+import com.ll.upload.file.FileStore;
 import com.ll.upload.product.entity.ProductFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,15 +20,18 @@ public class FileTerminator {
     private String filePath;
 
     //경로
-    private String getFilePath(String filename) {
+    public String getFilePath(String filename) {
         return filePath + filename;
     }
 
     //단일 멀티파일 들어왔을때 저장하고 반환
     public ProductFile terminateFile(MultipartFile multipartFile) throws IOException {
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+
         String originalFilename = multipartFile.getOriginalFilename();
         String terminatedFileName = terminateFileName(originalFilename);
-
         multipartFile.transferTo(new File(getFilePath(terminatedFileName)));
 
         return ProductFile
@@ -38,33 +42,31 @@ public class FileTerminator {
                 ;
     }
 
-    //실제 상품 등록에 사용할 로직 (리팩토링 필요)
-    //상품 등록은 무조건 메인 사진 1장과 서브 사진들을 가지고 있어야 한다.
-    public ProductFile terminateProductFile(MultipartFile mainMultipartFile, List<MultipartFile> subMultipartFiles) throws IOException {
-        if (mainMultipartFile.isEmpty() || subMultipartFiles.size() == 0) {
-            return null;
-        }
+//    //실제 상품 등록에 사용할 로직 (리팩토링 필요)
+//    //상품 등록은 무조건 메인 사진 1장과 서브 사진들을 가지고 있어야 한다.
+//    public ProductFile terminateProductFile(MultipartFile mainMultipartFile, List<MultipartFile> subMultipartFiles) throws IOException {
+//        if (mainMultipartFile.isEmpty() || subMultipartFiles.size() == 0) {
+//            return null;
+//        }
+//
+//        String originalFilename = mainMultipartFile.getOriginalFilename();
+//        String terminatedFileName = terminateFileName(originalFilename);
+//
+//        ProductFile mainFile = terminateFile(mainMultipartFile);
+//        List<ProductFile> subFiles = makeSubFiles(mainFile, subMultipartFiles);
+//
+//
+//        return mainFile;
+//    }
 
-        String originalFilename = mainMultipartFile.getOriginalFilename();
-        String terminatedFileName = terminateFileName(originalFilename);
-
-        ProductFile mainFile = terminateFile(mainMultipartFile);
-        List<ProductFile> subFiles = makeSubFiles(subMultipartFiles);
-
-        //메인파일에 서브파일 연결
-        mainFile.connectSubFiles(subFiles);
-
-        return mainFile;
-    }
-
-    //상품 이미지 등록에만 쓰일듯하다.
-    private List<ProductFile> makeSubFiles(List<MultipartFile> MultipartFiles) throws IOException {
-        List<ProductFile> files = new ArrayList<>();
+    public List<ProductFile> terminateFileList(List<MultipartFile> MultipartFiles) throws IOException {
+        List<ProductFile> fileList = new ArrayList<>();
         for(MultipartFile multipartFile : MultipartFiles){
-            files.add(terminateFile(multipartFile));
+            if(!multipartFile.isEmpty()){
+                fileList.add(terminateFile(multipartFile));
+            }
         }
-
-        return files;
+        return fileList;
     }
 
     private String terminateFileName(String originalFilename) {
@@ -76,5 +78,27 @@ public class FileTerminator {
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    public List<ProductFile> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
+        List<ProductFile> storeFileResult = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            if (!multipartFile.isEmpty()) {
+                storeFileResult.add(storeFile(multipartFile));
+            }
+        }
+        return storeFileResult;
+    }
+
+    public ProductFile storeFile(MultipartFile multipartFile) throws IOException {
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+
+        String originalFilename = multipartFile.getOriginalFilename();
+        String storeFileName = FileStore.createStoreFileName(originalFilename);
+        multipartFile.transferTo(new File(getFilePath(storeFileName)));
+        return new ProductFile(originalFilename, storeFileName);
     }
 }
