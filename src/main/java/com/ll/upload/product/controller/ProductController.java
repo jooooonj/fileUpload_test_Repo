@@ -1,5 +1,6 @@
 package com.ll.upload.product.controller;
 
+import com.ll.upload.domain.Item;
 import com.ll.upload.product.entity.ProductEx;
 import com.ll.upload.product.entity.ProductFile;
 import com.ll.upload.product.entity.request.ProductSaveRequest;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/products")
 @Controller
 public class ProductController {
 
@@ -41,6 +42,14 @@ public class ProductController {
         productEx = productRepository.save(productEx);
 
         return "redirect:/products/%s".formatted(productEx.getId());
+    }
+
+    @GetMapping("/{productId}")
+    public String shoProduct(@PathVariable Long productId, Model model) {
+        ProductEx productEx = productRepository.findById(productId).orElseThrow();
+
+        model.addAttribute("product", productEx);
+        return "product-view";
     }
 
 //    @PostMapping("/edit/{productId}")
